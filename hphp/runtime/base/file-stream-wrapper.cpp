@@ -42,11 +42,20 @@ MemFile* FileStreamWrapper::openFromCache(const String& filename,
   return nullptr;
 }
 
+static String removeScheme(const String& filename) {
+  return !strncmp(filename.data(), "file://", sizeof("file://") - 1)
+    ? filename.substr(sizeof("file://") - 1)
+    : filename;
+}
+
+static String translate(const String& filename, bool useFileCache = false) {
+  String path = removeScheme(filename);
+  return useFileCache ? File::TranslatePathWithFileCache(path) : File::TranslatePath(path);
+}
+
 File* FileStreamWrapper::open(const String& filename, const String& mode,
                               int options, CVarRef context) {
-  String fname =
-    !strncmp(filename.data(), "file://", sizeof("file://") - 1)
-    ? filename.substr(sizeof("file://") - 1) : filename;
+  String fname = removeScheme(filename);
 
   if (MemFile *file = openFromCache(fname, mode)) {
     return file;
@@ -80,25 +89,45 @@ Directory* FileStreamWrapper::opendir(const String& path) {
   return dir.release();
 }
 
+int FileStreamWrapper::access(const String& path, int mode, bool useFileCache) {
+  return ::access(translate(path, useFileCache).data(), mode);
+}
+
+int FileStreamWrapper::stat(const String& path, struct stat* buf, bool useFileCache) {
+  return ::stat(translate(path, useFileCache).data(), buf);
+}
+
+int FileStreamWrapper::lstat(const String& path, struct stat* buf, bool useFileCache) {
+  return ::lstat(translate(path, useFileCache).data(), buf);
+}
+
+int FileStreamWrapper::unlink(const String& path) {
+  return ::unlink(translate(path).data());
+}
+
+int FileStreamWrapper::rmdir(const String& path, int options) {
+  return ::rmdir(translate(path).data());
+}
+
 int FileStreamWrapper::rename(const String& oldname, const String& newname) {
   int ret =
     RuntimeOption::UseDirectCopy ?
-      Util::directRename(File::TranslatePath(oldname).data(),
-                         File::TranslatePath(newname).data())
+      Util::directRename(translate(oldname).data(),
+                         translate(newname).data())
                                  :
-      Util::rename(File::TranslatePath(oldname).data(),
-                   File::TranslatePath(newname).data());
+      Util::rename(translate(oldname).data(),
+                   translate(newname).data());
   return ret;
 }
 
 int FileStreamWrapper::mkdir(const String& path, int mode, int options) {
   if (options & k_STREAM_MKDIR_RECURSIVE)
     return mkdir_recursive(path, mode);
-  return ::mkdir(File::TranslatePath(path).data(), mode);
+  return ::mkdir(translate(path).data(), mode);
 }
 
 int FileStreamWrapper::mkdir_recursive(const String& path, int mode) {
-  String fullpath = File::TranslatePath(path);
+  String fullpath = translate(path);
   if (fullpath.size() > PATH_MAX) {
     errno = ENAMETOOLONG;
     return -1;

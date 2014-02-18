@@ -45,17 +45,17 @@ File* UserStreamWrapper::open(const String& filename, const String& mode,
   return file;
 }
 
-int UserStreamWrapper::access(const String& path, int mode) {
+int UserStreamWrapper::access(const String& path, int mode, bool useFileCache) {
   auto file = NEWOBJ(UserFile)(m_cls);
   Resource wrapper(file);
   return file->access(path, mode);
 }
-int UserStreamWrapper::lstat(const String& path, struct stat* buf) {
+int UserStreamWrapper::lstat(const String& path, struct stat* buf, bool useFileCache) {
   auto file = NEWOBJ(UserFile)(m_cls);
   Resource wrapper(file);
   return file->lstat(path, buf);
 }
-int UserStreamWrapper::stat(const String& path, struct stat* buf) {
+int UserStreamWrapper::stat(const String& path, struct stat* buf, bool useFileCache) {
   auto file = NEWOBJ(UserFile)(m_cls);
   Resource wrapper(file);
   return file->stat(path, buf);

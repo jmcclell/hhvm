@@ -36,23 +36,13 @@ class FileStreamWrapper : public Stream::Wrapper {
   static MemFile* openFromCache(const String& filename, const String& mode);
   virtual File* open(const String& filename, const String& mode,
                      int options, CVarRef context);
-  virtual int access(const String& path, int mode) {
-    return ::access(File::TranslatePath(path).data(), mode);
-  }
-  virtual int stat(const String& path, struct stat* buf) {
-    return ::stat(File::TranslatePath(path).data(), buf);
-  }
-  virtual int lstat(const String& path, struct stat* buf) {
-    return ::lstat(File::TranslatePath(path).data(), buf);
-  }
-  virtual int unlink(const String& path) {
-    return ::unlink(File::TranslatePath(path).data());
-  }
+  virtual int access(const String& path, int mode, bool useFileCache = false);
+  virtual int stat(const String& path, struct stat* buf, bool useFileCache = false);
+  virtual int lstat(const String& path, struct stat* buf, bool useFileCache = false);
+  virtual int unlink(const String& path);
   virtual int rename(const String& oldname, const String& newname);
   virtual int mkdir(const String& path, int mode, int options);
-  virtual int rmdir(const String& path, int options) {
-    return ::rmdir(File::TranslatePath(path).data());
-  }
+  virtual int rmdir(const String& path, int options);
 
   virtual Directory* opendir(const String& path);
 

@@ -63,7 +63,7 @@ static class PharStreamWrapper : public Stream::Wrapper {
     return file;
   }
 
-  virtual int access(const String& path, int mode) {
+  virtual int access(const String& path, int mode, bool useFileCache = false) {
     Variant ret = callStat(path);
     if (ret.isBoolean()) {
       assert(!ret.toBoolean());
@@ -72,7 +72,7 @@ static class PharStreamWrapper : public Stream::Wrapper {
     return 0;
   }
 
-  virtual int stat(const String& path, struct stat* buf) {
+  virtual int stat(const String& path, struct stat* buf, bool useFileCache = false) {
     Variant ret = callStat(path);
     if (ret.isBoolean()) {
       assert(!ret.toBoolean());
@@ -87,7 +87,7 @@ static class PharStreamWrapper : public Stream::Wrapper {
     return 0;
   }
 
-  virtual int lstat(const String& path, struct stat* buf) {
+  virtual int lstat(const String& path, struct stat* buf, bool useFileCache = false) {
     return stat(path, buf);
   }
 

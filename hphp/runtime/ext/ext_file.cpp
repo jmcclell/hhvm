@@ -110,10 +110,7 @@ static int accessSyscall(
     int mode,
     bool useFileCache = false) {
   Stream::Wrapper* w = Stream::getWrapperFromURI(path);
-  if (useFileCache && dynamic_cast<FileStreamWrapper*>(w)) {
-    return ::access(File::TranslatePathWithFileCache(path).data(), mode);
-  }
-  return w->access(path, mode);
+  return w->access(path, mode, useFileCache);
 }
 
 static int statSyscall(
@@ -121,10 +118,7 @@ static int statSyscall(
     struct stat* buf,
     bool useFileCache = false) {
   Stream::Wrapper* w = Stream::getWrapperFromURI(path);
-  if (useFileCache && dynamic_cast<FileStreamWrapper*>(w)) {
-    return ::stat(File::TranslatePathWithFileCache(path).data(), buf);
-  }
-  return w->stat(path, buf);
+  return w->stat(path, buf, useFileCache);
 }
 
 static int lstatSyscall(
@@ -132,10 +126,7 @@ static int lstatSyscall(
     struct stat* buf,
     bool useFileCache = false) {
   Stream::Wrapper* w = Stream::getWrapperFromURI(path);
-  if (useFileCache && dynamic_cast<FileStreamWrapper*>(w)) {
-    return ::lstat(File::TranslatePathWithFileCache(path).data(), buf);
-  }
-  return w->lstat(path, buf);
+  return w->lstat(path, buf, useFileCache);
 }
 
 const StaticString

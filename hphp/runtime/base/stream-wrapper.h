@@ -39,13 +39,13 @@ class Wrapper : boost::noncopyable {
 
   virtual File* open(const String& filename, const String& mode,
                      int options, CVarRef context) = 0;
-  virtual int access(const String& path, int mode) {
+  virtual int access(const String& path, int mode, bool useFileCache = false) {
     return -1;
   }
-  virtual int lstat(const String& path, struct stat* buf) {
+  virtual int lstat(const String& path, struct stat* buf, bool useFileCache = false) {
     return -1;
   }
-  virtual int stat(const String& path, struct stat* buf) {
+  virtual int stat(const String& path, struct stat* buf, bool useFileCache = false) {
     return -1;
   }
   virtual int unlink(const String& path) {

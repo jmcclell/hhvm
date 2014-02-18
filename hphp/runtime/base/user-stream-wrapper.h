@@ -30,9 +30,9 @@ class UserStreamWrapper : public Stream::Wrapper {
   UserStreamWrapper(const String& name, const String& clsname, int flags);
   virtual File* open(const String& filename, const String& mode,
                      int options, CVarRef context);
-  virtual int access(const String& path, int mode);
-  virtual int lstat(const String& path, struct stat* buf);
-  virtual int stat(const String& path, struct stat* buf);
+  virtual int access(const String& path, int mode, bool useFileCache = false);
+  virtual int lstat(const String& path, struct stat* buf, bool useFileCache = false);
+  virtual int stat(const String& path, struct stat* buf, bool useFileCache = false);
   virtual int unlink(const String& path);
   virtual int rename(const String& oldname, const String& newname);
   virtual int mkdir(const String& path, int mode, int options);
